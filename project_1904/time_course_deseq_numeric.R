@@ -38,7 +38,7 @@ sampleInfo$treatment <- factor(sampleInfo$treatment, levels = c("LPS0", "LPS3", 
 d<-as.formula(~condition + time + condition:time)
 dds <- DESeq2::DESeqDataSetFromMatrix(countData = countdata[,sampleInfo$name], colData = sampleInfo, design =d)
 dds <- estimateSizeFactors(dds)
-dds <- DESeq2::DESeq(dds, test="LRT", reduced = ~time+ condition)
+dds <- DESeq2::DESeq(dds, test="LRT", reduced = ~condition+ time)
 # resultsNames(dds)
 res_lrt <- DESeq2::results(dds)
 all_genes <- res_lrt %>%
