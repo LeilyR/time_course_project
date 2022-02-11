@@ -60,9 +60,15 @@ normalized_counts <- counts(dds, normalized=T)
 res_sig <- subset(res_lrt, padj<0.05)
 res_sig_sorted = res_sig[order(res_sig$padj), ]
 norm_sig <- subset(normalized_counts, row.names(normalized_counts) %in% row.names(res_sig_sorted))
-norm_sig <- norm_sig[,c("shCTRL_LPS0_Rep1", "shCTRL_LPS0_Rep2", "shCTRL_LPS0_Rep3", "shMOF_LPS0_Rep1", "shMOF_LPS0_Rep2", "shMOF_LPS0_Rep3",
-                        "shCTRL_LPS3_Rep1", "shCTRL_LPS3_Rep2", "shCTRL_LPS3_Rep3", "shMOF_LPS3_Rep1", "shMOF_LPS3_Rep2", "shMOF_LPS3_Rep3",
-                        "shCTRL_LPS12_Rep1", "shCTRL_LPS12_Rep2", "shCTRL_LPS12_Rep3", "shMOF_LPS12_Rep1", "shMOF_LPS12_Rep2", "shMOF_LPS12_Rep3")]
+norm_sig <- norm_sig[,c("shCTRL_LPS0_Rep1", "shCTRL_LPS0_Rep2", "shCTRL_LPS0_Rep3",
+												"shMOF_LPS0_Rep1", "shMOF_LPS0_Rep2", "shMOF_LPS0_Rep3",
+												"shPRDX1_LPS0_Rep1", "shPRDX1_LPS0_Rep2", "shPRDX1_LPS0_Rep3",
+                        "shCTRL_LPS3_Rep1", "shCTRL_LPS3_Rep2", "shCTRL_LPS3_Rep3",
+												"shMOF_LPS3_Rep1", "shMOF_LPS3_Rep2", "shMOF_LPS3_Rep3",
+												"shPRDX1_LPS3_Rep1", "shPRDX1_LPS3_Rep2", "shPRDX1_LPS3_Rep3",
+                        "shCTRL_LPS12_Rep1", "shCTRL_LPS12_Rep2", "shCTRL_LPS12_Rep3",
+												"shMOF_LPS12_Rep1", "shMOF_LPS12_Rep2", "shMOF_LPS12_Rep3"
+												"shPRDX1_LPS12_Rep1", "shPRDX1_LPS12_Rep2", "shPRDX1_LPS12_Rep3")]
 write.table(normalized_counts, file=paste0(out_path,'time_course_normCount_lrt_factor.tsv', sep = ""), quote=FALSE, sep='\t', row.names=TRUE)
 png(file = paste0(out_path,'time_course_normCountOnSigGenes_lrt_factor.png', sep = ""))
 pheatmap(norm_sig,

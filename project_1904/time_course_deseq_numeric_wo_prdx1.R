@@ -15,7 +15,7 @@ library(splines)
 })
 # In this case, using the likelihood ratio test with a reduced model which does not contain the interaction terms will test
 # whether the condition induces a change in gene expression at any time point after the reference level time point (time 0)
-out_path = "/data/akhtar/group/rabbani/rna_project1904/lrt_numeric/"
+out_path = "/data/akhtar/group/rabbani/rna_project1904/lrt_numeric_wo_prdx/"
 
 # Read count matrix
 # count exons and summarize on gene level
@@ -23,12 +23,12 @@ out_path = "/data/akhtar/group/rabbani/rna_project1904/lrt_numeric/"
 countdata <- read.table("/data/manke/group/rabbani/rna_project1904/counts.tsv", header=TRUE, check.names = TRUE, row.names = 1)
 
 # Read smaplesheet , detects conditions, generate the formula
-sampleInfo <- read.table("/data/manke/group/rabbani/rna_project1904/samplesheet_numeric.tsv", header=TRUE, check.names = TRUE,
+sampleInfo <- read.table("/data/manke/group/rabbani/rna_project1904/samplesheet_numeric_wo_prdx1.tsv", header=TRUE, check.names = TRUE,
                          stringsAsFactor = F)
-sampleInfo$condition <- factor(sampleInfo$condition, levels = c('shCTRL', 'shMOF', 'shPRDX1'))
+sampleInfo$condition <- factor(sampleInfo$condition, levels = c('shCTRL', 'shMOF'))
 sampleInfo$time <- as.integer(sampleInfo$time)
 
-sampleInfo$time <-ns(sampleInfo$time)[1:27,]
+sampleInfo$time <-ns(sampleInfo$time)[1:18,]
 sampleInfo$treatment <- factor(sampleInfo$treatment, levels = c("LPS0", "LPS3", "LPS12"))
 
 # build the matrix
@@ -65,15 +65,9 @@ normalized_counts <- counts(dds, normalized=T)
 res_sig <- subset(res_lrt, padj<0.05)
 res_sig_sorted = res_sig[order(res_sig$padj), ]
 norm_sig <- subset(normalized_counts, row.names(normalized_counts) %in% row.names(res_sig_sorted))
-norm_sig <- norm_sig[,c("shCTRL_LPS0_Rep1", "shCTRL_LPS0_Rep2", "shCTRL_LPS0_Rep3",
-                        "shMOF_LPS0_Rep1", "shMOF_LPS0_Rep2","shMOF_LPS0_Rep3",
-												"shPRDX1_LPS0_Rep1", "shPRDX1_LPS0_Rep2", "shPRDX1_LPS0_Rep3",
-                        "shCTRL_LPS3_Rep1", "shCTRL_LPS3_Rep2", "shCTRL_LPS3_Rep3",
-                        "shMOF_LPS3_Rep1", "shMOF_LPS3_Rep2", "shMOF_LPS3_Rep3",
-												"shPRDX1_LPS3_Rep1", "shPRDX1_LPS3_Rep2", "shPRDX1_LPS3_Rep3",
-                        "shCTRL_LPS12_Rep1", "shCTRL_LPS12_Rep2", "shCTRL_LPS12_Rep3",
-                        "shMOF_LPS12_Rep1", "shMOF_LPS12_Rep2", "shMOF_LPS12_Rep3"
-                        "shPRDX1_LPS12_Rep1", "shPRDX1_LPS12_Rep2", "shPRDX1_LPS12_Rep3")]
+norm_sig <- norm_sig[,c("shCTRL_LPS0_Rep1", "shCTRL_LPS0_Rep2", "shCTRL_LPS0_Rep3", "shMOF_LPS0_Rep1", "shMOF_LPS0_Rep2", "shMOF_LPS0_Rep3",
+                        "shCTRL_LPS3_Rep1", "shCTRL_LPS3_Rep2", "shCTRL_LPS3_Rep3", "shMOF_LPS3_Rep1", "shMOF_LPS3_Rep2", "shMOF_LPS3_Rep3",
+                        "shCTRL_LPS12_Rep1", "shCTRL_LPS12_Rep2", "shCTRL_LPS12_Rep3", "shMOF_LPS12_Rep1", "shMOF_LPS12_Rep2", "shMOF_LPS12_Rep3")]
 write.table(normalized_counts, file=paste0(out_path,'time_course_normCount_lrt_numeric.tsv', sep = ""), quote=FALSE, sep='\t', row.names=TRUE)
 png(file = paste0(out_path,'time_course_normCountOnSigGenes_lrt_numeric.png', sep = ""))
 pheatmap(norm_sig,
