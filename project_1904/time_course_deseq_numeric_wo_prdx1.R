@@ -15,12 +15,12 @@ library(splines)
 })
 # In this case, using the likelihood ratio test with a reduced model which does not contain the interaction terms will test
 # whether the condition induces a change in gene expression at any time point after the reference level time point (time 0)
-out_path = "/data/akhtar/group/rabbani/rna_project1904/lrt_numeric_wo_prdx/"
+out_path = "/data/akhtar/group2/rabbani/rna_project1904/lrt_numeric_wo_prdx/"
 
 # Read count matrix
 # count exons and summarize on gene level
 
-countdata <- read.table("/data/manke/group/rabbani/rna_project1904/counts.tsv", header=TRUE, check.names = TRUE, row.names = 1)
+countdata <- read.table("/data/manke/group/rabbani/rna_project1904/brb_counts.tsv", header=TRUE, check.names = TRUE, row.names = 1)
 
 # Read smaplesheet , detects conditions, generate the formula
 sampleInfo <- read.table("/data/manke/group/rabbani/rna_project1904/samplesheet_numeric_wo_prdx1.tsv", header=TRUE, check.names = TRUE,

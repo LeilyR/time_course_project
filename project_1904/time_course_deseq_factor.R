@@ -17,13 +17,13 @@ library(splines)
 # In this case, using the likelihood ratio test with a reduced model which does not contain the interaction terms will test
 # whether the condition induces a change in gene expression at any time point after the reference level time point (time 0)
 
-out_path = "/data/akhtar/group/rabbani/rna_project1904/lrt_factor/"
+out_path = "/data/akhtar/group2/rabbani/rna_project1904/lrt_factor/"
 
 
 # Read count matrix
 # count exons and summarize on gene level
 # filtering count data!! TODO
-countdata <- read.table("/data/manke/group/rabbani/rna_project1904/counts.tsv", header=TRUE, check.names = TRUE)
+countdata <- read.table("/data/manke/group/rabbani/rna_project1904/brb_counts.tsv", header=TRUE, check.names = TRUE)
 
 # Read smaplesheet , detects conditions, generate the formula
 sampleInfo <- read.table("/data/manke/group/rabbani/rna_project1904/samplesheet.tsv",
@@ -45,16 +45,25 @@ dds <- DESeq2::DESeq(dds, test="LRT", reduced = ~condition+ treatment)
 res_lrt <- DESeq2::results(dds)
 sig_res_lrt <- res_lrt %>%
                data.frame() %>%
-               rownames_to_column(var="gene") %>%
+               rownames_to_column(var="GeneID") %>%
                as_tibble() %>%
                filter(padj < 0.05)
+print(head(sig_res_lrt))
+# Add gene symbols
+gene_names <- read.table("/data/manke/group/rabbani/rna_project1904/genes.filtered.symbol", header=FALSE)
+gene_names <- gene_names[!duplicated(gene_names[,1]),]
+colnames(gene_names) <- c("GeneID", "external_gene_name")
+print(head(gene_names))
+sig_res_lrt <- merge(sig_res_lrt, gene_names, by.x = "GeneID", by.y = "GeneID" , all.x = TRUE)
+print(head(sig_res_lrt))
 
 write.table(sig_res_lrt, file = paste0(out_path,'time_course_sigGenes_lrt_factor.tsv', sep = ""),
             quote=FALSE, sep='\t', row.names=FALSE)
 
 # Get sig gene lists
 sig_lrt_genes <- sig_res_lrt %>%
-                 pull(gene)
+                 pull(GeneID)
+print(head(sig_lrt_genes))
 # pheatmap
 normalized_counts <- counts(dds, normalized=T)
 res_sig <- subset(res_lrt, padj<0.05)
@@ -91,7 +100,7 @@ clustering_sig_genes <- sig_res_lrt %>%
 # Obtain rlog values for those significant genes
 rld <- rlog(dds, blind=T)
 rld_mat <- assay(rld)
-cluster_rlog <- rld_mat[clustering_sig_genes$gene, ]
+cluster_rlog <- rld_mat[clustering_sig_genes$GeneID, ]
 row.names(sampleInfo) <- paste(sampleInfo$condition, sampleInfo$treatment, sampleInfo$replicates, sep = "_")
 clusters <- degPatterns(cluster_rlog, metadata = sampleInfo, time="treatment", col="condition", plot = FALSE, minc = 5)
 for (ii in unique(clusters[["normalized"]]$cluster)) {

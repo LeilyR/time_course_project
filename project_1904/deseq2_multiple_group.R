@@ -8,11 +8,11 @@ library("ggplot2")
 library("pheatmap")
 library(splines)
 })
-out_path = "/data/akhtar/group/rabbani/rna_project1904/pairwise_comparison/"
+out_path = "/data/akhtar/group2/rabbani/rna_project1904/pairwise_comparison/"
 
 # Read count matrix
 # count exons and summarize on gene level
-countdata <- read.table("/data/manke/group/rabbani/rna_project1904/counts.tsv",
+countdata <- read.table("/data/manke/group/rabbani/rna_project1904/brb_counts.tsv",
 												header=TRUE, check.names = TRUE)
 
 # Read smaplesheet , detects conditions, generate the formula
@@ -22,7 +22,7 @@ sampleInfo$condition <- factor(sampleInfo$condition, levels = c('shCTRL', 'shMOF
 sampleInfo$treatment <- factor(sampleInfo$treatment, levels = c("LPS0", "LPS3", "LPS12"))
 treatment_nested <- unique(sampleInfo$treatment.nested)
 sampleInfo$fullname <- paste(sampleInfo$condition,sampleInfo$treatment, sampleInfo$replicates, sep='_')
-
+# typeof(sampleInfo$fullname) is character! :)
 # build the matrix
 # from https://www.biostars.org/p/395926/
 d<-as.formula(~condition + treatment + condition:treatment)
@@ -93,6 +93,12 @@ mylist[[ "ddr_lps12_shctrl_lps0_shctrl" ]] <- ddr_lps12_shctrl_lps0_shctrl
 ddr_lps12_shctrl_lps3_shctrl <- DESeq2::results(dds, contrast = lps12_shctrl - lps3_shctrl)
 mylist[[ "ddr_lps12_shctrl_lps3_shctrl" ]] <- ddr_lps12_shctrl_lps3_shctrl
 
+# Add gene symbols
+gene_names <- read.table("/data/manke/group/rabbani/rna_project1904/genes.filtered.symbol", header=FALSE)
+gene_names <- gene_names[!duplicated(gene_names[,1]),]
+colnames(gene_names) <- c("GeneID", "external_gene_name")
+print(head(gene_names))
+
 # write all files
 for(case in 1:length(mylist)){
 		name_to_save = paste0(out_path,
@@ -103,6 +109,8 @@ for(case in 1:length(mylist)){
 		                  	ifelse(ddr.df$padj < 0.05,
 		                        ifelse(ddr.df$log2FoldChange > 0, "UP", "DOWN"),
 		                        	"None"))
+		ddr.df <- merge(ddr.df, gene_names, by.x = 0, by.y = "GeneID" , all.x = TRUE)
+		colnames(ddr.df)[which(names(ddr.df) == "Row.names")] <- "GeneID"
 		write.table(ddr.df, file=name_to_save, quote=FALSE, sep='\t')
 	}
 

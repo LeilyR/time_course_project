@@ -1,0 +1,7 @@
+name	condition	treatment	treatment.nested	replicates
+shCTRL_Rep1	shCTRL	LPS0	lps0_shctrl	Rep1
+shCTRL_Rep2	shCTRL	LPS0	lps0_shctrl	Rep2
+shCTRL_Rep3	shCTRL	LPS0	lps0_shctrl	Rep3
+shMOF_Rep1	shMOF	LPS0	lps0_shmof	Rep1
+shMOF_Rep2	shMOF	LPS0	lps0_shmof	Rep2
+shMOF_Rep3	shMOF	LPS0	lps0_shmof	Rep3

@@ -15,12 +15,12 @@ library(splines)
 })
 # In this case, using the likelihood ratio test with a reduced model which does not contain the interaction terms will test
 # whether the condition induces a change in gene expression at any time point after the reference level time point (time 0)
-out_path = "/data/akhtar/group/rabbani/rna_project1904/lrt_numeric/"
+out_path = "/data/akhtar/group2/rabbani/rna_project1904/lrt_numeric/"
 
 # Read count matrix
 # count exons and summarize on gene level
 
-countdata <- read.table("/data/manke/group/rabbani/rna_project1904/counts.tsv", header=TRUE, check.names = TRUE, row.names = 1)
+countdata <- read.table("/data/manke/group/rabbani/rna_project1904/brb_counts.tsv", header=TRUE, check.names = TRUE, row.names = 1)
 
 # Read smaplesheet , detects conditions, generate the formula
 sampleInfo <- read.table("/data/manke/group/rabbani/rna_project1904/samplesheet_numeric.tsv", header=TRUE, check.names = TRUE,
@@ -43,17 +43,24 @@ dds <- DESeq2::DESeq(dds, test="LRT", reduced = ~condition+ time)
 res_lrt <- DESeq2::results(dds)
 all_genes <- res_lrt %>%
                data.frame() %>%
-               rownames_to_column(var="gene") %>%
+               rownames_to_column(var="GeneID") %>%
                as_tibble()
+# Add gene symbols
+gene_names <- read.table("/data/manke/group/rabbani/rna_project1904/genes.filtered.symbol", header=FALSE)
+gene_names <- gene_names[!duplicated(gene_names[,1]),]
+colnames(gene_names) <- c("GeneID", "external_gene_name")
+print(head(gene_names))
+all_genes <- merge(all_genes, gene_names, by.x = "GeneID", by.y = "GeneID" , all.x = TRUE)
 write.table(all_genes, file=paste0(out_path,'time_course_allGenes_lrt_numeric.tsv', sep = ""), quote=FALSE, sep='\t',
                                    row.names=FALSE)
 
 sig_res_lrt <- res_lrt %>%
                data.frame() %>%
-               rownames_to_column(var="gene") %>%
+               rownames_to_column(var="GeneID") %>%
                as_tibble() %>%
                filter(padj < 0.05)
 
+sig_res_lrt <- merge(sig_res_lrt, gene_names, by.x = "GeneID", by.y = "GeneID" , all.x = TRUE)
 write.table(sig_res_lrt, file=paste0(out_path,'time_course_sigGenes_lrt_numeric.tsv', sep = ""), quote=FALSE, sep='\t',
                                      row.names=FALSE)
 #
@@ -95,7 +102,7 @@ clustering_sig_genes <- sig_res_lrt %>%
 # Obtain rlog values for those significant genes
 rld <- rlog(dds, blind=T)
 rld_mat <- assay(rld)
-cluster_rlog <- rld_mat[clustering_sig_genes$gene, ]
+cluster_rlog <- rld_mat[clustering_sig_genes$GeneID, ]
 row.names(sampleInfo) <-sampleInfo$name
 clusters <- degPatterns(cluster_rlog, metadata = sampleInfo, time="treatment", col="condition", plot = FALSE, minc = 10)
 for (ii in unique(clusters[["normalized"]]$cluster)) {
