@@ -19,8 +19,10 @@ out_path = "/data/akhtar/group2/rabbani/rna_project2129/lrt/"
 
 # Read count matrix
 # count exons and summarize on gene level
-# filtering count data!! TODO
 countdata <- read.table("/data/manke/group/rabbani/rna_project2129/brb_counts.tsv", header=TRUE, check.names = FALSE)
+# remove rows with mean <= 5
+countdata = countdata[rowMeans(countdata)>5,]
+
 # # Read smaplesheet , detects conditions, generate the formula
 sampleInfo <- read.table("/data/manke/group/rabbani/rna_project2129/samplesheet.tsv", header=TRUE, check.names = FALSE)
 sampleInfo$condition <- factor(sampleInfo$condition, levels = c('WT', 'vector', 'K197R', 'K197Q'))

@@ -37,11 +37,14 @@ library("ggplot2")
 library("pheatmap")
 library(splines)
 })
-out_path = "/data/akhtar/group2/rabbani/rna_project2129/pairwise_comparison_vs_wt/"
+out_path = "/data/akhtar/group2/rabbani/rna_project2129/pairwise_comparison_wo_zeros/"
 # Read count matrix
 # count exons and summarize on gene level
 countdata <- read.table("/data/manke/group/rabbani/rna_project2129/brb_counts.tsv",
 												header=TRUE, check.names = FALSE)
+
+# remove rows with mean <= 5
+countdata = countdata[rowMeans(countdata)>5,]
 
 # Read smaplesheet , detects conditions, generate the formula
 sampleInfo <- read.table("/data/manke/group/rabbani/rna_project2129/samplesheet_pw.tsv",
@@ -53,7 +56,11 @@ lps_treats <- unique(sampleInfo$treatment)
 #d<-as.formula(~1 + group) ## Originally used this
 # from https://www.biostars.org/p/395926/
 d<-as.formula(~condition + treatment + condition:treatment)
-dds <- DESeq2::DESeqDataSetFromMatrix(countData = countdata[,sampleInfo$name], colData = sampleInfo, design =d)
+print(sampleInfo)
+print(sampleInfo$condition)
+print(head(countdata[,sampleInfo$name]))
+dds <- DESeq2::DESeqDataSetFromMatrix(countData = countdata[,sampleInfo$name],
+																			colData = sampleInfo, design =d)
 dds <- estimateSizeFactors(dds)
 mod_mat <- model.matrix(design(dds), colData(dds))
 dds <- DESeq2::DESeq(dds)
@@ -91,9 +98,13 @@ for(treat in lps_treats){
 		mylist[[case]] <- colMeans(mod_mat[dds$treatment.nested == case, ])
 	}
 	# obtain results for each pairwise contrast
-	for(pair in list(a = c('vector', 'WT'), b = c('K197R', 'WT'), c = c('K197Q', 'WT'), d = c('K197Q', 'K197R'))){
+	for(pair in list(a = c('vector', 'WT'), b = c('K197R', 'WT'),
+									 c = c('K197Q', 'WT'), d = c('K197Q', 'K197R'))){
 		name1 = paste(pair[1],treat,sep=('_'))
 		name2 = paste(pair[2],treat,sep=('_'))
+		print(name1)
+		print(name2)
+		print(mylist[[name1]] - mylist[[name2]])
 		this_contrast <- DESeq2::results(dds, contrast = mylist[[name1]] - mylist[[name2]])
 		saving_name = paste(name1,name2,sep=('_vs_'))
 		all_contrasts[[saving_name]] <- this_contrast
@@ -118,7 +129,7 @@ for(cond in c('WT', 'K197Q', 'K197R')){
 print(mylist)
 
 # Add gene symbols
-gene_names <- read.table("/data/manke/group/rabbani/rna_project1904/genes.filtered.symbol", header=FALSE)
+gene_names <- read.table("/data/manke/group/rabbani/rna_project2129/genes.filtered.symbol", header=FALSE)
 gene_names <- gene_names[!duplicated(gene_names[,1]),]
 colnames(gene_names) <- c("GeneID", "external_gene_name")
 print(head(gene_names))
@@ -138,7 +149,7 @@ for(case in 1:length(all_contrasts)){
 		sub_down <- subset(ddr.df, ddr.df$Status %in% c('DOWN'))
 		print(length(sub_up$padj))
 		print(length(sub_down$padj))
-		write.table(ddr.df, file=name_to_save, quote=FALSE, sep='\t')
+		write.table(ddr.df, file=name_to_save, quote=FALSE, sep='\t', row.names=FALSE)
 	}
 
 
