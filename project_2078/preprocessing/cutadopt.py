@@ -4,7 +4,6 @@ import glob
 from multiprocessing import Pool
 
 output_path = "/data/manke/group/rabbani/atac_project2078/trimmed_fastq"
-# for file in glob.glob("/data/manke/processing/leily/atac_project2078/snakepipes_output/FASTQ/*_R1.fastq.gz"):
 def cutadapt(file):
 	base_name = os.path.basename(file)
 	dir_name = os.path.dirname(file)
