@@ -1,0 +1,5 @@
+- cut the adaptors
+- snakepipes DNA-mapping version 2.5.1 is used
+- atac pipeline
+- hmmrATAC peak calling 
+- deseq and edgeR on the peakcalling result
