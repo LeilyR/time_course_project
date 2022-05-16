@@ -1,5 +1,13 @@
-- cut the adaptors
-- snakepipes DNA-mapping version 2.5.1 is used
-- atac pipeline
-- hmmrATAC peak calling 
-- deseq and edgeR on the peakcalling result
+1- cut the adaptors
+2- snakepipes DNA-mapping version 2.5.1 is used
+	/package/anaconda3/envs/snakePipes-2.5.1/bin/DNA-mapping -i trimmed_fastq/ -o snakepipes_output -j 15 --dedup --trim --mapq 3 mm10 --properPairs -v --fastqc
+3- rename bam files by chaning - to _ to be ble to use them for the atac pipeline
+	for f in *; do mv "$f" "${f//-/_}"; done
+4- atac pipeline v0.0.1 is used
+	/localenv/rabbani/anaconda/miniconda3/envs/ATACofthesnake/bin/ATAC --bamDir
+  	renamed_filtered_bam/ --outDir atac_pipeline --genes /data/repository/organisms/GRCm38_ensembl/gencode/m9/genes.gtf
+  	--condaPrefix=~/localenv/anaconda/miniconda3/envs/ATACofthesnake/ --genomeFasta
+  	/data/repository/organisms/GRCm38_ensembl/genome_fasta/genome.fa --blackList /data/repository/organisms/GRCm38_ensembl/akundaje/blacklist.bed
+  	--genomeSize 1.87e9 --motifs /data/repository/misc/Motif/Jaspar/JASPAR2020_CORE_vertebrates_non-redundant_pfms_meme.txt
+5- hmmrATAC peak calling 
+6- deseq and edgeR on the peakcalling result
