@@ -1,7 +1,7 @@
 1. BRB count matrix based on mRNA pipeline of snakePipes-2.5.0, located at:
    (/data/akhtar/sequencing_data2/210616_A00931_0315_AHFFY7DRXY_lanes1_2/Analysis_1904_Chen_Akhtar/strandedmRNA-Seq_mouse/featureCounts/counts.tsv)
 
-2. running deseq2
+2. running deseq2 v1.26.0:
     * pairwise comparison, t-test
     * lrt with time as a factor 
         - saved certain clusters
