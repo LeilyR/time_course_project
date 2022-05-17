@@ -1,4 +1,4 @@
-name: snakepipes_RNAseq_environment_0.1
+name: r_env
 channels:
   - r
   - conda-forge
@@ -404,4 +404,3 @@ dependencies:
     - typing-extensions==3.7.4.3
     - webencodings==0.5.1
     - zipp==3.4.1
-prefix: /localenv/rabbani/anaconda/miniconda3/envs/snakepipes_RNAseq_environment_0.1
