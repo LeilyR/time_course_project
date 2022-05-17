@@ -3,16 +3,17 @@
 
 2. running deseq2 v1.26.0:
     * pairwise comparison, t-test is applied on a design based on both condition and treatment
-    * lrt on redusced model after removing the interaction between time and condition, time is considered as a factor variable. 
+    * lrt on redusced model after removing the interaction between time and condition, time is considered as a factor variable.    
+    * lrt on redusced model after removing the interaction between time and condition, time is considered as a int variable. 
+
+3. DEGreport v1.22.0 is used for clusteing the differential analysis result
+    for lrt_factor:
         - saved certain clusters
             (/data/akhtar/group2/rabbani/rna_project1904/lrt_factor/genes_in_clusters/)
         - used biomart for these clusters to add their gene names(biomart.ipynb)
             (/data/akhtar/group2/rabbani/rna_project1904/lrt_factor/genes_in_clusters/clustered_genes_with_gene_name)
-    * lrt on redusced model after removing the interaction between time and condition, time is considered as a int variable. 
 
-
-
-3. Enrichment analysis on pairwise result
+4. Enrichment analysis on pairwise result
     - up_down_column.ipynb
     - gsea.ipynb
     - enricher.ipynb

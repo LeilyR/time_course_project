@@ -1,0 +1,8 @@
+1. BRB count matrix based on mRNA pipeline of snakePipes-2.5.1, located at:
+   (/data/akhtar/sequencing_data3/211215_A00931_0395_AHLVKTDRXY/Analysis_2129_Chen_Akhtar/strandedmRNA-Seq_mouse/featureCounts/counts.tsv)
+
+2. running deseq2 v1.26.0:
+    * pairwise comparison, t-test is applied on a design based on both condition and treatment
+    * lrt on reduced model after removing the interaction between time and condition, time is considered as a int variable. 
+
+3. DEGreport v1.22.0 is used for clusteing the differential analysis result
